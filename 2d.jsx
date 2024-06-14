@@ -3,7 +3,7 @@ import _ from 'lodash'
 const minPinWidth = 3
 
 export const points = dovetails => {
-  const pinNarrowing = dovetails.thickness * Math.tan(dovetails.angle * Math.PI / 180)
+  const pinNarrowing = dovetails.thickness * Math.tan(dovetails.angle * Math.PI / 180) / 2
 
   // pin * (1 + tailToPin) = (dovetails.thickness / dovetails.density)
   const approxPinWidth = _.max([
@@ -41,15 +41,15 @@ export const points = dovetails => {
         const left = offset + tail
         const right = offset + tail + pin
         return {
-          items: [...items, [left, left + pinNarrowing, right - pinNarrowing, right]],
+          items: [...items, [left - pinNarrowing, left + pinNarrowing, right - pinNarrowing, right + pinNarrowing]],
           offset: right
         }
       },
       {items: [], offset: halfPinWidth}
     ).items
     const halfPins = [
-      [0, 0, halfPinWidth - pinNarrowing, halfPinWidth],
-      [dovetails.width - halfPinWidth, dovetails.width - halfPinWidth + pinNarrowing, dovetails.width, dovetails.width]
+      [0, 0, halfPinWidth - pinNarrowing, halfPinWidth + pinNarrowing],
+      [dovetails.width - halfPinWidth - pinNarrowing, dovetails.width - halfPinWidth + pinNarrowing, dovetails.width, dovetails.width]
     ]
     return [halfPins[0], ...fullPins, halfPins[1]]
   })()

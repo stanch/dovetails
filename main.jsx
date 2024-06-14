@@ -24,7 +24,7 @@ const App = () => {
     thickness: 25,
     angle: 10,
     halfPinSize: 0.7,
-    tailToPin: 1.3,
+    tailToPin: 1.8,
     density: 0.5,
     tailVariation: 1.3,
     assembled: false
@@ -38,11 +38,11 @@ const App = () => {
   const pc = v => `${Math.round(v * 100)}%`
 
   const controls1 = [
-    {id: "width", title: "Board width", min: 50, max: 600, format: mm},
-    {id: "thickness", title: "Board thickness", min: 10, max: 50, format: mm},
+    {id: "width", title: "Board width", min: 50, max: 600, step: 5, format: mm},
+    {id: "thickness", title: "Board thickness", min: 10, max: 50, step: 5, format: mm},
     {id: "angle", title: "Angle", min: 5, max: 15, format: deg},
     {id: "halfPinSize", title: "Half-pin to pin ratio", min: 0.3, max: 1, step: 0.1, format: pc},
-    {id: "tailToPin", title: "Tail to pin ratio", min: 0.5, max: 2.5, step: 0.1, format: pc}
+    {id: "tailToPin", title: "Tail to pin ratio", min: 0.7, max: 3, step: 0.1, format: pc}
   ]
 
   const controls2 = [
