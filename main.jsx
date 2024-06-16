@@ -34,13 +34,13 @@ const App = () => {
     setValues({...values, [id]: value})
 
   const mm = v => `${v} mm`
-  const deg = v => `${v}˚ (≈1:${Math.round(1 / Math.tan(v * Math.PI / 180))})`
+  const deg = v => `${v}˚ ` + (v == 0 ? "(box joint)" : `(≈1:${Math.round(1 / Math.tan(v * Math.PI / 180))})`)
   const pc = v => `${Math.round(v * 100)}%`
 
   const controls1 = [
     {id: "width", title: "Board width", min: 50, max: 600, step: 5, format: mm},
     {id: "thickness", title: "Board thickness", min: 10, max: 50, step: 5, format: mm},
-    {id: "angle", title: "Angle", min: 5, max: 15, format: deg},
+    {id: "angle", title: "Angle", min: 0, max: 15, format: deg},
     {id: "halfPinSize", title: "Half-pin to pin ratio", min: 0.3, max: 1, step: 0.1, format: pc},
     {id: "tailToPin", title: "Tail to pin ratio", min: 0.7, max: 3, step: 0.1, format: pc}
   ]
