@@ -2,10 +2,12 @@ import React from 'react'
 import { useState } from 'react'
 import ReactDOM from 'react-dom/client'
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs'
+import 'react-tabs/style/react-tabs.css'
+import Switch from 'react-switch'
+import { Canvas } from '@react-three/fiber'
 import { points, Diagram } from './2d.jsx'
 import { Boards, Scene, camera } from './3d.jsx'
-import { Canvas } from '@react-three/fiber'
-import 'react-tabs/style/react-tabs.css'
+import Fraction from 'fraction.js'
 
 const Slider = ({id, title, min, max, step, value, format, hideValue, onChange}) => {
   const formatted = format ? format(value) : value
@@ -27,19 +29,42 @@ const App = () => {
     tailToPin: 1.8,
     density: 0.5,
     tailVariation: 1.3,
-    assembled: false
+    assembled: false,
+    imperial: false
   })
 
   const onChange = (id, value) =>
     setValues({...values, [id]: value})
 
-  const mm = v => `${v} mm`
+  const onChangeUnits = imperial => {
+    if (imperial != values.imperial) {
+      const factor = imperial ? 6.25 : 5
+      setValues({
+        ...values,
+        width: Math.round(values.width / factor) * factor,
+        thickness: Math.round(values.thickness / factor) * factor,
+        imperial
+      })
+    }
+  }
+
+  const mm = v => `${Math.round(v)} mm`
+  const inches = v => `${new Fraction(Math.round(16 * v / 25), 16).toFraction(true)}″`
+  const len = values.imperial ? inches : mm
   const deg = v => `${v}˚ ` + (v == 0 ? "(box joint)" : `(≈1:${Math.round(1 / Math.tan(v * Math.PI / 180))})`)
   const pc = v => `${Math.round(v * 100)}%`
 
   const controls1 = [
-    {id: "width", title: "Board width", min: 50, max: 600, step: 5, format: mm},
-    {id: "thickness", title: "Board thickness", min: 10, max: 50, step: 5, format: mm},
+    {
+      id: "width", title: "Board width", format: len,
+      min: 50, max: 600,
+      step: values.imperial ? 6.25 : 5
+    },
+    {
+      id: "thickness", title: "Board thickness", format: len,
+      min: values.imperial ? 6.25 : 5, max: 50,
+      step: values.imperial ? 6.25 : 5
+    },
     {id: "angle", title: "Angle", min: 0, max: 15, format: deg},
     {id: "halfPinSize", title: "Half-pin to pin ratio", min: 0.3, max: 1, step: 0.1, format: pc},
     {id: "tailToPin", title: "Tail to pin ratio", min: 0.7, max: 3, step: 0.1, format: pc}
@@ -52,46 +77,52 @@ const App = () => {
 
   const { pinPoints, tailPoints } = points(values)
 
-  return <Tabs>
-    <TabList>
-      <Tab>Designing</Tab>
-      <Tab>Marking out</Tab>
-    </TabList>
-    <TabPanel>
-      <div className="viz">
-        <Canvas camera={camera}>
-          <Scene/>
-          <Boards dovetails={values} pinPoints={pinPoints} tailPoints={tailPoints}/>
-        </Canvas>
-      </div>
-      <div className="controls">
-        <div>
-          <button onClick={() => setValues({...values, assembled: !values.assembled})}>
-            {values.assembled ? "Disassemble" : "Assemble"}
-          </button>
+  return <>
+    <Switch
+      className="imperial" checked={values.imperial}
+      checkedIcon="metric" uncheckedIcon="imperial" width={100} onColor="#888"
+      onChange={onChangeUnits}/>
+    <Tabs>
+      <TabList>
+        <Tab>Designing</Tab>
+        <Tab>Marking out</Tab>
+      </TabList>
+      <TabPanel>
+        <div className="viz">
+          <Canvas camera={camera}>
+            <Scene/>
+            <Boards dovetails={values} pinPoints={pinPoints} tailPoints={tailPoints}/>
+          </Canvas>
         </div>
-      </div>
-      <div className="controls">
-        {controls1.map(c =>
-          <Slider key={c.id} id={c.id} title={c.title}
-            min={c.min} max={c.max} step={c.step}
-            format={c.format} value={values[c.id]}
-            onChange={onChange}/>)
-        }
-      </div>
-      <div className="controls">
-        {controls2.map(c =>
-          <Slider key={c.id} id={c.id} title={c.title}
-            min={c.min} max={c.max} step={c.step}
-            hideValue={true} value={values[c.id]}
-            onChange={onChange}/>)
-        }
-      </div>
-    </TabPanel>
-    <TabPanel>
-      <Diagram dovetails={values} tailPoints={tailPoints}/>
-    </TabPanel>
-  </Tabs>
+        <div className="controls">
+          <div>
+            <button onClick={() => setValues({...values, assembled: !values.assembled})}>
+              {values.assembled ? "Disassemble" : "Assemble"}
+            </button>
+          </div>
+        </div>
+        <div className="controls">
+          {controls1.map(c =>
+            <Slider key={c.id} id={c.id} title={c.title}
+              min={c.min} max={c.max} step={c.step}
+              format={c.format} value={values[c.id]}
+              onChange={onChange}/>)
+          }
+        </div>
+        <div className="controls">
+          {controls2.map(c =>
+            <Slider key={c.id} id={c.id} title={c.title}
+              min={c.min} max={c.max} step={c.step}
+              hideValue={true} value={values[c.id]}
+              onChange={onChange}/>)
+          }
+        </div>
+      </TabPanel>
+      <TabPanel>
+        <Diagram dovetails={values} tailPoints={tailPoints} format={len}/>
+      </TabPanel>
+    </Tabs>
+  </>
 }
 
 ReactDOM.createRoot(document.getElementById("root")).render(
