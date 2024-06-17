@@ -80,7 +80,9 @@ const App = () => {
   return <>
     <Switch
       className="imperial" checked={values.imperial}
-      checkedIcon="metric" uncheckedIcon="imperial" width={100} onColor="#888"
+      checkedIcon={<span>metric</span>}
+      uncheckedIcon={<span>imperial</span>}
+      width={100} onColor="#888"
       onChange={onChangeUnits}/>
     <Tabs>
       <TabList>
@@ -119,6 +121,15 @@ const App = () => {
         </div>
       </TabPanel>
       <TabPanel>
+        <p>
+          <strong>Step 1:</strong> Mark the points on the left using the <span className="highlight">highlighted</span> numbers, measuring from both sides of the board (↓ and ↑) for symmetry.
+        </p>
+        <p>
+          <strong>Step 2:</strong> Mark the points on the right with a bevel gauge or a dovetail marker set to <strong>{values.angle}˚</strong> to get a consistent angle.
+        </p>
+        <p>
+          <strong>Step 3:</strong> Use the remaining numbers to check your layout. (There might be slight differences due to rounding.)
+        </p>
         <Diagram dovetails={values} tailPoints={tailPoints} format={len}/>
       </TabPanel>
     </Tabs>

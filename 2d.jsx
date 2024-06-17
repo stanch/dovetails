@@ -72,16 +72,26 @@ const tailPath = (dovetails, tailPoints) =>
   ).join(" ") + `L 0 ${dovetails.width}`
 
 export const Diagram = ({dovetails, tailPoints, format}) => {
+  const twoSides = (i, j) => {
+    const highlight = j == 1 || j == 2 ? "highlight" : ""
+    return i*2 + j/2 < tailPoints.length ?
+    <tspan className={highlight}>↑ {format(tailPoints[i][j])}</tspan> :
+    <>
+      <tspan className={highlight}>↓ {format(tailPoints[tailPoints.length-i-1][3-j])}</tspan>
+      <tspan className="alternative"> (↑ {format(tailPoints[i][j])})</tspan>
+    </>
+  }
+
   return <svg xmlns="http://www.w3.org/2000/svg"
     viewBox={`-100 -10 ${dovetails.thickness + 200} ${dovetails.width + 20}`}>
     <path d={tailPath(dovetails, tailPoints)}/>
     <text className="marking-line" x={0} y={0}>{format(0)}</text>
     {tailPoints.map(([leftBottom, leftTop, rightTop, rightBottom], i) =>
       <g key={i}>
-        <text className="edge" x={dovetails.thickness} y={leftBottom}>{format(leftBottom)}</text>
-        <text className="edge" x={dovetails.thickness} y={rightBottom}>{format(rightBottom)}</text>
-        <text className="marking-line" x={0} y={leftTop}>{format(leftTop)}</text>
-        <text className="marking-line" x={0} y={rightTop}>{format(rightTop)}</text>
+        <text className="edge" x={dovetails.thickness} y={leftBottom}>{twoSides(i, 0)}</text>
+        <text className="edge" x={dovetails.thickness} y={rightBottom}>{twoSides(i, 3)}</text>
+        <text className="marking-line" x={0} y={leftTop}>{twoSides(i, 1)}</text>
+        <text className="marking-line" x={0} y={rightTop}>{twoSides(i, 2)}</text>
       </g>
     )}
     <text className="marking-line" x={0} y={dovetails.width}>{format(dovetails.width)}</text>
