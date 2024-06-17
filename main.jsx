@@ -122,7 +122,7 @@ const App = () => {
       </TabPanel>
       <TabPanel>
         <p>
-          <strong>Step 1:</strong> Mark the points on the left using the <span className="highlight">highlighted</span> numbers, measuring from both sides of the board (↓ and ↑) for symmetry.
+          <strong>Step 1:</strong> Mark the points on the left using the <span className="highlight">highlighted</span> numbers, measuring from both sides of the board (↑ and ↓) for symmetry.
         </p>
         <p>
           <strong>Step 2:</strong> Mark the points on the right with a bevel gauge or a dovetail marker set to <strong>{values.angle}˚</strong> to get a consistent angle.
